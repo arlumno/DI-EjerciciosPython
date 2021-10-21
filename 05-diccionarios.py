@@ -12,9 +12,6 @@ print(dicCaracteres)
 
 
 
-
-
-
 # Ejercicio 2
 # Vamos a declarar un diccionario para guardar los precios de las distintas frutas. El programa
 # pedirá el nombre de la fruta y la cantidad que se ha vendido y nos mostrará el precio final de la
