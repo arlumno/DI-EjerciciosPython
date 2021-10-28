@@ -16,11 +16,11 @@ class Persona:
 
     @property
     def nombre(self):
-        return self._nombre
+        return self.__nombre
 
     @property
     def edad(self):
-        return self._edad
+        return self.__edad
 
     @property
     def dni(self):
@@ -29,24 +29,25 @@ class Persona:
     @nombre.setter
     def nombre(self,nombre):
         if len(nombre) > 1 :
-            self._nombre = nombre
+            self.__nombre = nombre
         else:
             print("Nombre no válido")
 
     @edad.setter
     def edad(self, edad):
         if edad > 0 and edad < 125:
-            self._edad = edad
+            self.__edad = edad
         else:
+            self.__edad = 0
             print("Edad no válida")
 
     @dni.setter
     def dni(self, dni):
-        if len(dni) == 9:
+        if self.validarDni(dni):
             self._dni = dni
         else:
-            print("Dni no válido")
-
+            self._dni = "dniNoValido"
+            print(self.nombre, " tiene un Dni no válido")
 
     def mostrar(self):
         print("Nombre:", self.nombre, "Dni:", self.dni ,"Edad:",self.edad, "años" )
@@ -56,9 +57,28 @@ class Persona:
             return True
         else:
             return False
-ejemplo = Persona("Armando",33,"55446699U")
-#ejemplo.mostrar()
-#ejemplo.esMayorDeEdad()
+
+    def validarDni(self, dni):
+        resultado= False
+        if len(dni) == 9:
+            letra = dni[-1]
+            numeros = dni[0:8]
+            if numeros.isdigit():
+                letrasDni= 'TRWAGMYFPDXBNJZSQVHLCKE';
+                indiceLetra = int(numeros)%23
+                if letrasDni[indiceLetra] == letra.upper():
+                    resultado= True
+
+        return resultado
+
+print("01 ---------------------------------------------")
+ejemploPersona = Persona("Armando",38,"53170624y")
+
+ejemploPersona2 = Persona("Roberto",17,"55446699U")
+ejemploPersona.mostrar()
+ejemploPersona2.mostrar()
+print("------------------------------------------------")
+
 
 
 # Ejercicio 2
@@ -77,43 +97,45 @@ ejemplo = Persona("Armando",33,"55446699U")
 class Cuenta:
     def __init__(self,titular,cantidad = 0.00):
         self.titular = titular
-        self._cantidad = cantidad
+        self.__cantidad = cantidad
 
     @property
     def titular(self):
-        return self._titular
+        return self.__titular
 
     @property
     def cantidad(self):
-        return self._cantidad
+        return self.__cantidad
 
     @titular.setter
-    def titular(self,nombre):
-        self._titular = nombre
+    def titular(self,titular):
+        self.__titular = titular
 
     def mostrar(self):
         print("Datos del Titular:")
         self.titular.mostrar()
-        print("Saldo: \n", self.cantidad, "Euros")
+        print("Saldo:", self.cantidad, "Euros")
 
     def ingresar(self,importe):
         if importe >= 0:
-            self._cantidad += importe
+            self.__cantidad += importe
         else:
             print("Error en la operación. Importe negativo")
 
     def retirar(self,importe):
-        self._cantidad -= importe
-        if(self._cantidad < 0):
+        self.__cantidad -= importe
+        if(self.__cantidad < 0):
             print("AVISO: su cuenta está en rojos, Saldo actual: ", self.cantidad)
 
-cuenta = Cuenta(ejemplo,300);
+
+print("02 ---------------------------------------------")
+cuenta = Cuenta(ejemploPersona,300);
 cuenta.mostrar()
-cuenta.ingresar(3.3)
+cuenta.ingresar(3.2)
 cuenta.mostrar()
 cuenta.retirar(400.09)
 cuenta.mostrar()
-
+print("-----------------------------------------------")
 
 # Ejercicio 3
 # Vamos a definir ahora una “Cuenta Joven”, para ello vamos a crear una nueva clase
@@ -129,3 +151,45 @@ cuenta.mostrar()
 # • El método mostrar() debe devolver el mensaje de “Cuenta Joven” y la bonificación de
 # la cuenta.
 # Piensa los métodos heredados de la clase madre que hay que reescribir.
+
+class CuentaJoven(Cuenta):
+    def __init__(self,titular,cantidad = 0.00, bonificacion = 0):
+        super().__init__(titular,cantidad)
+        self.bonificacion = bonificacion
+
+    @property
+    def bonificacion(self):
+        return self.__bonificacion
+
+    @bonificacion.setter
+    def bonificacion(self,bonificacion):
+        self.__bonificacion = bonificacion
+
+    def esTitularValido(self):
+        if self.titular.edad >= 18 and self.titular.edad < 25:
+            return True
+        else:
+            return False
+
+    def retirar(self,importe):
+        if self.esTitularValido():
+            super().retirar(importe)
+        else:
+            print("No tienes permitido las retiradas")
+
+    def mostrar(self):
+        print("-- Cuenta Joven -- Bonificada al:",self.bonificacion, "%" )
+        super().mostrar()
+
+print("03 ---------------------------------------------")
+
+alguien = Persona("Elisa",26,"21345678B")
+cuentaJoven = CuentaJoven(alguien,300);
+cuentaJoven.retirar(20)
+cuentaJoven.mostrar()
+
+alguienJoven = Persona("Ana",18,"21345678B")
+cuentaJoven2 = CuentaJoven(alguienJoven,300,40);
+cuentaJoven2.retirar(70)
+cuentaJoven2.mostrar()
+print("------------------------------------------")
